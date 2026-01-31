@@ -54,11 +54,28 @@ def print_errors(errors_a, errors_b, roles_a, roles_b, merged, conflicts, show_m
     only_a = set(roles_a) - set(roles_b)
     only_b = set(roles_b) - set(roles_a)
     both = set(roles_a) & set(roles_b)
-    print("Server A Spieler:", len(roles_a))
-    print("Server B Spieler:", len(roles_b))
-    print("Gesamt nach Merge:", len(merged))
-    print("Nur A:", len(only_a), "Nur B:", len(only_b), "Beide:", len(both))
-    print("\nKonflikte:", "Fehler gesamt:", len(conflicts), "Angezeigt:", show_max_errors)
+    union = set(roles_a) | set(roles_b)
+    only_one_server = set(roles_a) ^ set(roles_b)
+    gesamt = len(roles_a) + len(roles_b)
+
+    print("=== Gesamtübersicht ===")
+    print(f"Gesamteinträge (mit Duplikaten): {gesamt}")
+    print(f"Gesamteinträge (ohne Duplikate): {len(union)}")
+    print(f"Nur auf einem Server vorhanden: {len(only_one_server)}")
+
+    print("\n=== Serververteilung ===")
+    print(f"Server A Spieler: {len(roles_a)}")
+    print(f"Server B Spieler: {len(roles_b)}")
+
+    print("\n=== Nach Merge ===")
+    print(f"Gesamt nach Merge: {len(merged)}")
+    print(
+        f"Spieler nur auf einem Server: {len(only_one_server)} | "
+        f"Nur A: {len(only_a)} | "
+        f"Nur B: {len(only_b)} | "
+        f"Beide: {len(both)}"
+    )
+
     for c in conflicts[:show_max_errors]:
         print(" ", c)
     print("\nKonflikte:", "Fehler gesamt:", len(all_errors), "Angezeigt:", show_max_errors)
@@ -69,7 +86,7 @@ def main():
     roles_a, errors_a = read_csv("serverA.csv")
     roles_b, errors_b = read_csv("serverB.csv")
     merged, conflicts = merge(roles_a, roles_b)
-    #print_errors(errors_a, errors_b, roles_a, roles_b, merged, conflicts, show_max_errors=10)
+    print_errors(errors_a, errors_b, roles_a, roles_b, merged, conflicts, show_max_errors=10)
     write_csv("serverA_clean.csv", roles_a)
     write_csv("serverB_clean.csv", roles_b)
     write_csv("merged_clean.csv", merged)
